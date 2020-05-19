@@ -49,7 +49,7 @@ H_i2o = eye(4);
 H_i2o(1:3,1:3) = efit.Rotation;
 H_i2o(1:3,4) = efit.Center;
 
-%% Transform vertices to the ellipsoid frame
+%% Transform vertices to the ellipsoid-centered frame
 v_tmp = transpose(v);
 v_tmp(4,:) = 1;
 
@@ -64,9 +64,6 @@ b = efit.PrincipalRadii(2);
 c = efit.PrincipalRadii(3);
 fcnEllipsoid = @(x) (x(:,1).^2)./(a^2) + (x(:,2).^2)./(b^2) + (x(:,3).^2)./(c^2);
 
-% Represent semi-axes as a diagonal
-D = diag(efit.PrincipalRadii);
-
 %% Initialize patch output working variable
 pTMP.Vertices = v;
 pTMP.Faces = [];
@@ -75,7 +72,7 @@ pTMP.Faces = [];
 e_i = fcnEllipsoid(v_i);
 
 %% Remove faces that are not within the ellipsoid
-idxVerts = find( e_i <= 1 ).'; % All points outside ellipsoid
+idxVerts = find( e_i <= 1 ).'; % All points inside ellipsoid
 for idxVert = idxVerts
     binALL = f == idxVert;
     binROW = any(binALL,2); % Does any face contain this vertex?

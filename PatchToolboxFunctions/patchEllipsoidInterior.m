@@ -64,9 +64,6 @@ b = efit.PrincipalRadii(2);
 c = efit.PrincipalRadii(3);
 fcnEllipsoid = @(x) (x(:,1).^2)./(a^2) + (x(:,2).^2)./(b^2) + (x(:,3).^2)./(c^2);
 
-% Represent semi-axes as a diagonal
-D = diag(efit.PrincipalRadii);
-
 %% Initialize patch output working variable
 pTMP.Vertices = v;
 pTMP.Faces = [];
