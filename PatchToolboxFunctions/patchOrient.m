@@ -1,7 +1,7 @@
 function ptch = patchOrient(ptch,n)
 % PATCHORIENT updates the face definition of a patch object to ensure that
 % faces are defined in a counterclockwise sense about the outward normal 
-% of each facet.
+% of each face.
 %   ptch = PATCHORIENT(ptch,n) defines the patch as either a structured
 %   array containing fields "Faces" and "Vertices" or a patch object.
 %   Normals are defined as an Nx3 array "n".
