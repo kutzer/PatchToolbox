@@ -63,8 +63,10 @@ delete(h);
 h = waitbar(0,'Mapping unique edges to vertex indices...','Name','patchEdgeInfo.m');
 m = size(v,1);          % Total number of vertices
 for vertex = 1:m
-    bin = any(uEdges == vertex);
-    eVertices(vertex,:) = reshape(find(bin),1,[]);
+    bin = any(uEdges == vertex,2);
+    fprintf('%6d ',find(bin'));
+    fprintf('\n');
+    %eVertices(vertex,:) = reshape(find(bin),1,[]);
     waitbar(vertex/m,h);
 end
 delete(h);
