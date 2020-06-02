@@ -44,7 +44,7 @@ X = [];
 for i = idx
     % Get face vertices
     ff = f(i,:);
-    v_w = v(ff,:)
+    v_w = v(ff,:);
     % Calculate body-fixed coordinate frame for the face vertices
     %   -> Vertices in the body-fixed frame will only have x/y coordinates
     %   with vertex 2 located at the origin.
