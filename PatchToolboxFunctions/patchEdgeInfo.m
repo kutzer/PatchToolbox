@@ -55,7 +55,7 @@ for face = 1:n
     fDirections(face,:) = reshape(directions(bin),1,[]);
     % TODO - make sure the vertices are appropriately ordered to preserve
     %        face normal.
-    waitbar(i/n,h);
+    waitbar(face/n,h);
 end
 delete(h);
 
@@ -64,8 +64,8 @@ h = waitbar(0,'Mapping unique edges to vertex indices...','Name','patchEdgeInfo.
 m = size(v,1);          % Total number of vertices
 for vertex = 1:m
     bin = any(uEdges == vertex);
-    eVertices(i,:) = reshape(find(bin),1,[]);
-    waitbar(i/m,h);
+    eVertices(vertex,:) = reshape(find(bin),1,[]);
+    waitbar(vertex/m,h);
 end
 delete(h);
 
