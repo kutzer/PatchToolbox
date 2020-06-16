@@ -16,6 +16,8 @@ function [in,on] = inPatch(p,varargin)
 %
 %   M. Kutzer, 10Jun2020, USNA
 
+error('THIS FUNCTION IS NOT COMPLETE.');
+
 %% Check & parse inputs
 narginchk(2,4);
 
