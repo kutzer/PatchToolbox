@@ -82,6 +82,12 @@ I_c = I - M * ...
 %% Calculate eigenvectors and eigenvalues
 [R,I_i] = eig(I_c);
 
+%% Make sure R is "right handed
+if ~isSO(R)
+    % Flip the x-direction
+    R(:,1) = -R(:,1);
+end
+
 %% Define rigid body transformation
 H_i2o = eye(4);
 H_i2o(1:3,1:3) = R;
