@@ -46,12 +46,15 @@ end
 N = size(f,1);
 m = size(f,2); % This *should* be 3 (if the mesh is triangular)
 
-adj = sparse(N,N);
-fAdj = uint32(zeros(N,m)); % TODO - consider 8-bit, 16-bit, 32-bit switch based on number of faces
+adj = sparse(N,N); % Sparse matrices slow this down
+%adj = false(N,N); 
+
+faceAdj = uint32(zeros(N,m)); % TODO - consider 8-bit, 16-bit, 32-bit switch based on number of faces
 if size(f,1) > (2^32)
     error('More faces than the max number for uint32! Update this function.');
 end
 
+%{
 if N > 2000
     useWaitbar = true;
 else
@@ -61,8 +64,10 @@ end
 if useWaitbar
     wb = waitbar(0,'Finding face adjacency...','Name',mfilename);
 end
+%}
 
-for i = 1:N
+%for i = 1:N
+parfor i = 1:N
     % Find shared vertices
     bin = false(N,m);
     for j = 1:m
@@ -75,22 +80,37 @@ for i = 1:N
     sBIN = sum(bin,2);
     
     % Define edge adjacencies
-    % -> Two shared vertices on a trianglular mesh - edges are shared.
-    faceAdj(i,:) = reshape( uint32(find(sBIN == 2)),1,[]); % TODO - consider 8-bit, 16-bit, 32-bit switch based on number of faces
-    adj(i,faceAdj(i,:)) = 1;
     
+    % -> Two shared vertices on a trianglular mesh - edges are shared.
+    % ---> OPTION 1
+    %faceAdj(i,:) = reshape( uint32(find(edgeAdjBIN)),1,[]); % TODO - consider 8-bit, 16-bit, 32-bit switch based on number of faces
+    faceAdj(i,:) = find(sBIN == 2);
+    %adj(i,faceAdj(i,:)) = 1;
+    % ---> OPTION 2
+    %edgeAdjBIN = sBIN == 2;
+    %faceAdj(i,:) = find(edgeAdjBIN);
+    %adj(i,edgeAdjBIN) = 1;
+    
+    %{
     if useWaitbar
         if mod(i,250) == 0
             prc = i/N;
             waitbar(prc,wb,sprintf('Finding face adjacency (%10.6f%% complete)...',prc*100));
         end
-    end 
+    end
+    %}
 end
 
+%{
 if useWaitbar
     prc = i/N;
     waitbar(prc,wb,sprintf('Finding face adjacency (%10.6f%% complete)...',prc*100));
     delete(wb);
 end
+%}
 
+%% Define adjacency matrix
+ii = repmat((1:N).',1,size(faceAdj,2));
+idx = sub2ind(size(adj),ii,faceAdj);
+adj(idx) = 1;
 
