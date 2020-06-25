@@ -48,6 +48,10 @@ m = size(f,2); % This *should* be 3 (if the mesh is triangular)
 
 adj = sparse(N,N);
 fAdj = uint32(zeros(N,m)); % TODO - consider 8-bit, 16-bit, 32-bit switch based on number of faces
+if size(f,1) > (2^32)
+    error('More faces than the max number for uint32! Update this function.');
+end
+
 for i = 1:N
     % Find shared vertices
     bin = false(N,m);
