@@ -52,7 +52,7 @@ if size(f,1) > (2^32)
     error('More faces than the max number for uint32! Update this function.');
 end
 
-if N > 500
+if N > 2000
     useWaitbar = true;
 else
     useWaitbar = false;
@@ -80,11 +80,16 @@ for i = 1:N
     adj(i,faceAdj(i,:)) = 1;
     
     if useWaitbar
-        prc = i/N;
-        waitbar(prc,wb,sprintf('Finding face adjacency (%10.6f%% complete)...',prc*100));
+        if mod(i,250) == 0
+            prc = i/N;
+            waitbar(prc,wb,sprintf('Finding face adjacency (%10.6f%% complete)...',prc*100));
+        end
     end 
 end
+
 if useWaitbar
+    prc = i/N;
+    waitbar(prc,wb,sprintf('Finding face adjacency (%10.6f%% complete)...',prc*100));
     delete(wb);
 end
 
