@@ -52,6 +52,16 @@ if size(f,1) > (2^32)
     error('More faces than the max number for uint32! Update this function.');
 end
 
+if N > 500
+    useWaitbar = true;
+else
+    useWaitbar = false;
+end
+
+if useWaitbar
+    wb = waitbar(0,'Finding face adjacency...','Name',mfilename);
+end
+
 for i = 1:N
     % Find shared vertices
     bin = false(N,m);
@@ -68,7 +78,14 @@ for i = 1:N
     % -> Two shared vertices on a trianglular mesh - edges are shared.
     faceAdj(i,:) = reshape( uint32(find(sBIN == 2)),1,[]); % TODO - consider 8-bit, 16-bit, 32-bit switch based on number of faces
     adj(i,faceAdj(i,:)) = 1;
+    
+    if useWaitbar
+        prc = i/N;
+        waitbar(prc,wb,sprintf('Finding face adjacency (%10.6f%% complete)...',prc*100));
+    end 
 end
-
+if useWaitbar
+    delete(wb);
+end
 
 
