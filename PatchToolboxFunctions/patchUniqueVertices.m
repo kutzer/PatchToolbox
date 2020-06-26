@@ -22,10 +22,13 @@ idxMap = -idxMap; % Make index values negative to keep them seperate from old in
 h = waitbar(0,'Mapping faces to unique vertices...','Name','patchUniqueVertices.m');
 fUnique = f;
 n = numel(idxMap);
+dn = round(n/100);
 for i = 1:n
     bin = fUnique == i;
     fUnique(bin) = idxMap(i);
-    waitbar(i/n,h);
+    if mod(i,dn) == 0
+        waitbar(i/n,h);
+    end
 end
 delete(h);
 
