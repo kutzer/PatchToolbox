@@ -10,6 +10,18 @@ function txt = patchPlotFaceIndices(varargin)
 %   txt = PATCHPLOTFACEINDICES(ptch,idx,offset) allows the user to specify
 %   an offset between the patch face and text label. 
 %
+%   Inputs:
+%         ptch - patch object or structured array containing the fields 
+%                "Vertices" and "Faces".
+%          idx - N-element array containing face index value(s) to display. 
+%                If idx = [] the function will display face labels.
+%       offset - offset between the face centroid and the center of the
+%                text for the face label (along the outward pointing unit
+%                normal). This value defaults to 0.
+%
+%   Outputs:
+%       txt - Nx1 array containing text object handles for each face label.
+%       
 %   NOTE: This function assumes the patch is defined using a triangular
 %   mesh.
 %
@@ -61,7 +73,8 @@ X_offset = X + N*offset;
 for i = 1:size(X_offset,1)
     str = sprintf('f_{%d}',idx(i));
     txt(i,1) = text(X_offset(i,1),X_offset(i,2),X_offset(i,3),str,...
-        'Parent',axsTMP,'Tag','Patch Face Index Labels');
+        'Parent',axsTMP,'Tag','Patch Face Index Labels',...
+        'HorizontalAlignment','center','VerticalAlignment','middle');
 end
 
 %% Migrate text to parent and delete temporary figure
