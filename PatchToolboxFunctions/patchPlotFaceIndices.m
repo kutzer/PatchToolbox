@@ -28,7 +28,7 @@ function txt = patchPlotFaceIndices(varargin)
 %   M. Kutzer, 02Jun2020, USNA
 
 %% Check input(s)
-narginchk(1,2);
+narginchk(1,3);
 ptch = varargin{1};
 
 try
