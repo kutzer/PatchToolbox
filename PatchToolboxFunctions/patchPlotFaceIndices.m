@@ -7,8 +7,11 @@ function txt = patchPlotFaceIndices(varargin)
 %   txt = PATCHPLOTFACEINDICES(ptch,idx) allows the user to specify the
 %   index values.
 %
+%   txt = PATCHPLOTFACEINDICES(ptch,idx,offset) allows the user to specify
+%   an offset between the patch face and text label. 
+%
 %   NOTE: This function assumes the patch is defined using a triangular
-%   mesh
+%   mesh.
 %
 %   M. Kutzer, 02Jun2020, USNA
 
@@ -26,8 +29,13 @@ end
 switch nargin
     case 1
         idx = 1:size(f,1);
+        offset = 0;
     case 2
         idx = varargin{2};
+        offset = 0;
+    case 3
+        idx = varargin{2};
+        offset = varargin{3};
     otherwise
         error('Unexpected number of inputs.');
 end
@@ -43,11 +51,17 @@ hold(axsTMP,'on');
 %% Calculate centroids
 X = patchFaceCentroid(ptch,idx);
 
+%% Calculate face unit normals
+N = patchFaceNormal(ptch,idx);
+
+%% Combine centroids and normals using offset 
+X_offset = X + N*offset;
+
 %% Add text
-for i = 1:size(X,1)
+for i = 1:size(X_offset,1)
     str = sprintf('f_{%d}',idx(i));
-    txt(i,1) = text(X(i,1),X(i,2),X(i,3),str,'Parent',axsTMP,...
-        'Tag','Patch Face Index Labels');
+    txt(i,1) = text(X_offset(i,1),X_offset(i,2),X_offset(i,3),str,...
+        'Parent',axsTMP,'Tag','Patch Face Index Labels');
 end
 
 %% Migrate text to parent and delete temporary figure
