@@ -52,6 +52,10 @@ switch nargin
         error('Unexpected number of inputs.');
 end
 
+if isempty(idx)
+    idx = 1:size(f,1);
+end
+
 %% Get parent of patch object 
 mom = get(ptch,'Parent');
 
