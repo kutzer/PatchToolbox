@@ -1,8 +1,13 @@
 function [ptc1_out,ptc2_out] = patchFaceIntersect(ptc1,ptc2,idx1,idx2)
 % PATCHFACEINTERSECT
+%   
+%   THIS FUNCTION IS INCOMPLETE.
+%
 %   [ptc1_out,ptc2_out] = PATCHFACEINTERSECT(ptc1,ptc2,idx1,idx2)
 %
 %   M. Kutzer, 12Jun2020, USNA
+
+error('This function is incomplete.');
 
 %% Check inputs & parse inputs
 narginchk(4,4);

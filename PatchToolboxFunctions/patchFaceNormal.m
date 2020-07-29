@@ -28,9 +28,9 @@ n = nan(numel(idx),3);
 n_hat = n;
 for i = 1:numel(idx)
     % Get vertices
-    v = p.Vertices(p.Faces(idx(i),:),:);
+    v = ptc.Vertices(ptc.Faces(idx(i),:),:);
     % Calculate normal
     n(i,:) = cross( (v(3,:) - v(2,:)), (v(1,:) - v(2,:)) );
-    n_hat(i,:) = n./norm(n);
+    n_hat(i,:) = n(i,:)./norm(n(i,:));
 end
 
