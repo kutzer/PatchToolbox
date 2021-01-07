@@ -13,9 +13,9 @@ function varargout = PatchToolboxVer
 %   M. Kutzer 19May2020, USNA
 
 A.Name = 'Patch Toolbox';
-A.Version = '1.0.0';
+A.Version = '1.0.1';
 A.Release = '(R2019a)';
-A.Date = '19-May-2020';
+A.Date = '07-Jan-2021';
 A.URLVer = 1;
 
 msg{1} = sprintf('MATLAB %s Version: %s %s',A.Name, A.Version, A.Release);
