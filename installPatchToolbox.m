@@ -14,6 +14,7 @@ function installPatchToolbox(replaceExisting)
 %   M. Kutzer, 18May2020, USNA
 
 % Updates
+%   08Jan2021 - Corrected questdlg
 
 % TODO - Allow users to create a local version if admin rights are not
 % possible.
@@ -44,7 +45,7 @@ if isToolbox == 7
         choice = questdlg(sprintf(...
             ['MATLAB Root already contains the Patch Toolbox.\n',...
             'Would you like to replace the existing toolbox?']),...
-            'Yes','No');
+            'Replace Existing Patch Toolbox','Yes','No','Cancel','Yes');
     elseif replaceExisting
         choice = 'Yes';
     else
