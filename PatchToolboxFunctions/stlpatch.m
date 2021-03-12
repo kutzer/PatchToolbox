@@ -12,6 +12,10 @@ function [p,stltitle] = stlpatch(filename)
 %
 %   M. Kutzer, 19Dec2014, USNA
 
+% Updates
+%   12Mar2021 - Updated to use MATLAB's embedded function if it is called
+%               instead of Esmonde-White's preferred 2010 function.
+
 %TODO - check for stlread and point to website:
 % http://www.mathworks.com/matlabcentral/fileexchange/29906-binary-stl-file-reader
 
