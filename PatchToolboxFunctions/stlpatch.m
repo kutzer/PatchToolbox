@@ -15,7 +15,15 @@ function [p,stltitle] = stlpatch(filename)
 %TODO - check for stlread and point to website:
 % http://www.mathworks.com/matlabcentral/fileexchange/29906-binary-stl-file-reader
 
-[v, f, ~, c, stltitle] = stlread(filename);
+try
+    [v, f, ~, c, stltitle] = stlread(filename);
+catch
+    fprintf('Using MATLAB''s embedded stlread function.');
+    [tr,~,~,~]  = stlread(filename);
+    c = repmat([0.5,0.5,0.5],2,1);  % Default color of gray
+    f = tr.ConnectivityList;
+    v = tr.Points;
+end
 
 p.FaceColor = mean(c); % patch objects do not currently enable individual face colors
 p.FaceAlpha = 1;
