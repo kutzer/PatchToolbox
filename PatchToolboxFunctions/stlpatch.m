@@ -22,7 +22,7 @@ function [p,stltitle] = stlpatch(filename)
 try
     [v, f, ~, c, stltitle] = stlread(filename);
 catch
-    fprintf('Using MATLAB''s embedded stlread function.');
+    fprintf('Using MATLAB''s embedded stlread function.\n');
     [tr,~,~,~]  = stlread(filename);
     c = repmat([0.5,0.5,0.5],2,1);  % Default color of gray
     f = tr.ConnectivityList;
