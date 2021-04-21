@@ -12,10 +12,13 @@ function varargout = PatchToolboxVer
 %
 %   M. Kutzer 19May2020, USNA
 
+% Updates
+%   21Apr2021 - Migrated patchSphere from Geometry Toolbox to Patch Toolbox
+
 A.Name = 'Patch Toolbox';
-A.Version = '1.0.1';
+A.Version = '1.0.2';
 A.Release = '(R2019a)';
-A.Date = '07-Jan-2021';
+A.Date = '21-Apr-2021';
 A.URLVer = 1;
 
 msg{1} = sprintf('MATLAB %s Version: %s %s',A.Name, A.Version, A.Release);
