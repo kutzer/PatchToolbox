@@ -1,10 +1,26 @@
-function ptch = patchOrient(ptch,n)
+function ptc = patchOrient(ptc,n)
 % PATCHORIENT updates the face definition of a patch object to ensure that
 % faces are defined in a counterclockwise sense about the outward normal 
 % of each face.
-%   ptch = PATCHORIENT(ptch,n) defines the patch as either a structured
+%   ptc = PATCHORIENT(ptc,n) defines the patch as either a structured
 %   array containing fields "Faces" and "Vertices" or a patch object.
-%   Normals are defined as an Nx3 array "n".
+%   Normals are defined as an Mx3 array "n".
+%
+%   Input(s)
+%       ptc - patch object or structured array with fields 'Vertices' and
+%            'Faces'
+%           ptc.Vertices - Nx3 array containing 3D vertex coordinates
+%           ptc.Faces    - Mx3 array containing vertex indices describing
+%                          triangular faces
+%       n   - Mx3 array defining face normals
+%
+%   Output(s)
+%       ptc - patch object or structured array with fields 'Vertices' and
+%            'Faces'
+%           ptc.Vertices - Nx3 array containing 3D vertex coordinates
+%           ptc.Faces    - Mx3 array containing vertex indices describing
+%                          triangular faces. Vertex indices are re-ordered
+%                          to match face normals.
 %
 %   NOTE: This function assumes the patch is defined using a triangular
 %   mesh
@@ -14,12 +30,15 @@ function ptch = patchOrient(ptch,n)
 %
 %   M. Kutzer, 02May2019, USNA
 
+% Update(s)
+%   03Oct2022 - Updated documentation
+
 %% Parse inputs
 narginchk(2,2);
 
 try
-    v = ptch.Vertices;
-    f = ptch.Faces;
+    v = ptc.Vertices;
+    f = ptc.Faces;
 catch
     error('Patch must be defined with "Vertices" and "Faces".');
 end
@@ -60,4 +79,4 @@ for i = 1:size(f,1)
 end
 
 %% Update patch
-ptch.Faces = f;
+ptc.Faces = f;
