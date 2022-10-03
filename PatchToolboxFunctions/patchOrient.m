@@ -15,6 +15,8 @@ function ptch = patchOrient(ptch,n)
 %   M. Kutzer, 02May2019, USNA
 
 %% Parse inputs
+narginchk(2,2);
+
 try
     v = ptch.Vertices;
     f = ptch.Faces;
