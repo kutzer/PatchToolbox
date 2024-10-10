@@ -66,7 +66,7 @@ for vertex = 1:m
     bin = any(uEdges == vertex,2);
     fprintf('%6d ',find(bin'));
     fprintf('\n');
-    %eVertices(vertex,:) = reshape(find(bin),1,[]);
+    eVertices(vertex,:) = reshape(find(bin),1,[]);
     waitbar(vertex/m,h);
 end
 delete(h);
