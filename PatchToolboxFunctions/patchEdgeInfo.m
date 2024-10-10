@@ -13,6 +13,9 @@ function edgeInfo = patchEdgeInfo(ptch)
 %
 %   M. Kutzer, 01Jun2020, USNA
 
+% Updates:
+%   10Oct2024 - Updated to account for NaN values in face rows
+
 %% Parse inputs
 try
     v = ptch.Vertices;
@@ -22,6 +25,8 @@ catch
 end
 
 %% Define all edges
+%{
+% METHOD 1 - Assumes no NaN values witin faces
 % Repeat the first vertex index 
 f_wrap = [f, f(:,1)];
 % Define vertex and face mapping
@@ -35,6 +40,21 @@ end
 n = size(f,1);          % Total number of faces 
 f_idx = transpose(1:n); % Index of each face
 faces = repmat(f_idx,size(f,2),1);
+%}
+
+% MethOD 2 - Allows for NaN values within faces
+edges = [];
+faces = [];
+nEdgesPerFace = 0;      % Maximum edges per face
+n = size(f,1);          % Total number of faces 
+for i = 1:n
+    tf = ~isnan( f(i,:) );
+    faceEdges = f(i,tf);
+    faceEdges(2,:) = faceEdges([2:end,1]);
+    edges = [edges; faceEdges.'];
+    faces = [faces; repmat(i,nnz(tf),1)];
+    nEdgesPerFace = max([nEdgesPerFace,nnz(tf)]);
+end
 
 %% Find unique edges
 [sEdges,sIdx] = sort(edges,2);
@@ -51,8 +71,10 @@ h = waitbar(0,'Mapping unique edges to face indices...','Name','patchEdgeInfo.m'
 n = size(f,1);          % Total number of faces 
 for face = 1:n
     bin = faces == face;
-    eFaces(face,:) = reshape(idxMap(bin),1,[]);
-    fDirections(face,:) = reshape(directions(bin),1,[]);
+    eFaces(face,:) = ...
+        [reshape(idxMap(bin)    ,1,[]), nan(1,nEdgesPerFace-nnz(bin),1)];
+    fDirections(face,:) = ...
+        [reshape(directions(bin),1,[]), nan(1,nEdgesPerFace-nnz(bin),1)];
     % TODO - make sure the vertices are appropriately ordered to preserve
     %        face normal.
     waitbar(face/n,h);
