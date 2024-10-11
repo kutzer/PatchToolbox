@@ -11,11 +11,16 @@ function [Xints,iInfo] = patchPlaneIntersect(ptch,abcd,ZERO)
 %              value is 1e-8.
 %
 %   Output(s)
-%      tbd
+%       Xints - N-element cell array containing the vertices of the unique 
+%               paths of intersection
+%       iInfo - structured array containing intersection info
+%
+%   TODO - finalize slicing of polyshape and differentiate between regions
+%          and holes
 %
 %   M. Kutzer, 10Oct2024, USNA
 
-debug = true;
+debug = false;
 
 %% Check input(s)
 narginchk(2,3);
