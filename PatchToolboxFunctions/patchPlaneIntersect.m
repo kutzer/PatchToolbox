@@ -45,8 +45,8 @@ if debug
     axs = axes('Parent',fig,'NextPlot','add','DataAspectRatio',[1 1 1]);
     view(axs,3);
 
-    ptc = patch(ptch,'FaceColor','b','FaceAlpha',0.2,'EdgeColor','none');
-    
+    ptc = patch(ptch,'FaceColor','k','FaceAlpha',0.2,'EdgeColor','none');
+
     Xlim(1,:) = xlim(axs);
     Xlim(2,:) = ylim(axs);
     Xlim(3,:) = zlim(axs);
@@ -61,7 +61,6 @@ end
 Xint = [];      % 3xN array of intersection points
 tfFaces = [];   % FxN logical array representing faces adjacent to point
 tfEdges = [];   % ExN logical array representing edges adjacent to point
-adjXint = [];   % NxN logical array defining adjacency between intersects
 
 nEdges = size(eInfo.Edges,1);
 nFaces = size(eInfo.Faces,1);
@@ -74,7 +73,30 @@ for i = 1:nEdges
     %   pnt - 3x1 -> Segment intersect plane
     %   pnt - 3x2 -> Segment on plane
     [pnt,tfEndPnt] = intersectPlaneSegment(abcd,edgePts,ZERO);
-    
+
+    % DEBUG
+    if debug
+        switch size(pnt,2)
+            case 0
+                plt_e(i) = plot3(axs,...
+                    edgePts(1,:),edgePts(2,:),edgePts(3,:),'-k');
+            case 1
+                if nnz(tfEndPnt) == 0
+                    plt_e(i) = plot3(axs,...
+                        edgePts(1,:),edgePts(2,:),edgePts(3,:),'-g',...
+                        'LineWidth',1.5);
+                else
+                    plt_e(i) = plot3(axs,...
+                        edgePts(1,:),edgePts(2,:),edgePts(3,:),'-m',...
+                        'LineWidth',1.5);
+                end
+            case 2
+                plt_e(i) = plot3(axs,...
+                    edgePts(1,:),edgePts(2,:),edgePts(3,:),'-y',...
+                    'LineWidth',1.5);
+        end
+    end
+
     % Process intersection by type
     % -> Intersection(s) are the edge end-point(s)
     if any(tfEndPnt)
@@ -91,10 +113,10 @@ for i = 1:nEdges
             % Append intersection point
             jj = jj+1;
             Xint(:,end+1) = pnt(:,jj);
-            
+
             % Define vertex index
             idxVert = eInfo.Edges(i,j);
-            
+
             % Define adjacent edge indices
             idxEdge = eInfo.Vertices(idxVert,:);
             % -> Remove NaN values
@@ -121,9 +143,9 @@ for i = 1:nEdges
             % Do nothing
             continue
         case 1  % pnt - 3x1 -> Segment intersect plane
-            
+
             % Append intersection point
-            Xint(:,end+1);
+            Xint(:,end+1) = pnt;
 
             % Define edge index
             idxEdge = i;
@@ -148,3 +170,172 @@ for i = 1:nEdges
     end
 
 end
+
+% DEBUG
+if debug
+    fprintf('tfFaces = \n');
+    for i = 1:nFaces
+        fprintf('\t[');
+        fprintf('%d',tfFaces(i,:));
+        fprintf(']\n');
+    end
+
+    fprintf('tfEdges = \n');
+    for i = 1:nEdges
+        fprintf('\t[');
+        fprintf('%d',tfEdges(i,:));
+        fprintf(']\n');
+    end
+end
+
+%% Remove redundant points of intersection
+% Keep only points with unique edge adjacency -----------------------------
+[~,idxKeep,idxSame] = unique(tfEdges.','rows');
+idxKeep = idxKeep.';
+idxSame = idxSame.';
+
+Xint = Xint(:,idxKeep.');
+
+nKeep = numel(idxKeep);
+tfEdgesTMP = false(nEdges,nKeep);
+tfFacesTMP = false(nFaces,nKeep);
+for i = 1:nKeep
+    tfEdgesTMP(:,i) = any( tfEdges(:,idxSame == i), 2 );
+    tfFacesTMP(:,i) = any( tfFaces(:,idxSame == i), 2 );
+
+    % DEBUG
+    %{
+    if debug
+        fprintf('tfFaces(:,%d) = any(___,2) \n',i);
+        for j = 1:nFaces
+            fprintf('\t[ ');
+            fprintf('%d ',tfFaces(j,idxSame == i));
+            fprintf('] = [ %d ]\n',tfFacesTMP(j,i));
+        end
+
+        fprintf('tfEdges(:,%d) = any(___,2) \n',i);
+        for j = 1:nEdges
+            fprintf('\t[ ');
+            fprintf('%d ',tfEdges(j,idxSame == i));
+            fprintf('] = [ %d ]\n',tfEdgesTMP(j,i));
+        end
+    end
+    %}
+end
+tfEdges = tfEdgesTMP;
+tfFaces = tfFacesTMP;
+
+if debug
+    fprintf('%s',repmat('v',1,60));
+    fprintf('\nKeep only points with unique edge adjacency\n')
+    fprintf('tfFaces = \n');
+    for i = 1:nFaces
+        fprintf('\t[ ');
+        fprintf('%d ',tfFaces(i,:));
+        fprintf(']\n');
+    end
+
+    fprintf('tfEdges = \n');
+    for i = 1:nEdges
+        fprintf('\t[ ');
+        fprintf('%d ',tfEdges(i,:));
+        fprintf(']\n');
+    end
+    fprintf('%s',repmat('^',1,60));
+    fprintf('\n');
+end
+% -------------------------------------------------------------------------
+
+% Keep only points with unique face adjacency -----------------------------
+[~,idxKeep,idxSame] = unique(tfFaces.','rows');
+idxKeep = idxKeep.';
+idxSame = idxSame.';
+
+Xint = Xint(:,idxKeep.');
+
+nKeep = numel(idxKeep);
+tfEdgesTMP = false(nEdges,nKeep);
+tfFacesTMP = false(nFaces,nKeep);
+for i = 1:nKeep
+    tfEdgesTMP(:,i) = any( tfEdges(:,idxSame == i), 2 );
+    tfFacesTMP(:,i) = any( tfFaces(:,idxSame == i), 2 );
+
+    % DEBUG
+    %{
+    if debug
+        fprintf('tfFaces(:,%d) = any(___,2) \n',i);
+        for j = 1:nFaces
+            fprintf('\t[ ');
+            fprintf('%d ',tfFaces(j,idxSame == i));
+            fprintf('] = [ %d ]\n',tfFacesTMP(j,i));
+        end
+
+        fprintf('tfEdges(:,%d) = any(___,2) \n',i);
+        for j = 1:nEdges
+            fprintf('\t[ ');
+            fprintf('%d ',tfEdges(j,idxSame == i));
+            fprintf('] = [ %d ]\n',tfEdgesTMP(j,i));
+        end
+    end
+    %}
+end
+tfEdges = tfEdgesTMP;
+tfFaces = tfFacesTMP;
+if debug
+    fprintf('%s',repmat('v',1,60));
+    fprintf('\nKeep only points with unique face adjacency\n')
+    fprintf('tfFaces = \n');
+    for i = 1:nFaces
+        fprintf('\t[ ');
+        fprintf('%d ',tfFaces(i,:));
+        fprintf(']\n');
+    end
+
+    fprintf('tfEdges = \n');
+    for i = 1:nEdges
+        fprintf('\t[ ');
+        fprintf('%d ',tfEdges(i,:));
+        fprintf(']\n');
+    end
+    fprintf('%s',repmat('^',1,60));
+    fprintf('\n');
+end
+% -------------------------------------------------------------------------
+
+% DEBUG
+if debug
+    % Plot and label intersections
+    plt = plot3(axs,Xint(1,:),Xint(2,:),Xint(3,:),'.g','MarkerSize',15);
+    for i = 1:size(Xint,2)
+        txt(i) = text(axs,Xint(1,i),Xint(2,i),Xint(3,i),sprintf('%d',i),...
+            'HorizontalAlignment','center','VerticalAlignment','middle',...
+            'BackgroundColor','w');
+    end
+end
+
+%% Populate adjacency
+N = size(Xint,2);
+adjXint = false(N,N);   % NxN adjacency between intersects
+
+for i = 1:N
+    for j = (i+1):N
+        % Intersections share an edge
+        if any( tfEdges(:,i) & tfEdges(:,j), 1 )
+            adjXint(i,j) = true;
+            adjXint(j,i) = true;
+        end
+
+        % Intersections share a face
+        if any( tfFaces(:,i) & tfFaces(:,j), 1 )
+            adjXint(i,j) = true;
+            adjXint(j,i) = true;
+        end
+    end
+end
+
+adjXint
+
+%% Package temporary output
+iInfo.Xint = Xint;
+iInfo.tfFaces = tfFaces;
+iInfo.tfEdges = tfEdges;
