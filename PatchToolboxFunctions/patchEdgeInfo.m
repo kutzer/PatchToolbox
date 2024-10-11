@@ -88,10 +88,19 @@ for vertex = 1:m
     bin = any(uEdges == vertex,2);
     %fprintf('%6d ',find(bin'));
     %fprintf('\n');
-    eVertices(vertex,:) = reshape(find(bin),1,[]);
+    v2eIdx = reshape(find(bin),1,[]);
+    nV2eIdx = numel(v2eIdx);
+    if vertex > 1 && nV2eIdx > size(eVertices,2)
+        eVertices(:,nV2eIdx) = 0;
+    end
+    eVertices(vertex,1:nV2eIdx) = reshape(find(bin),1,[]);
     waitbar(vertex/m,h);
 end
 delete(h);
+
+% Replace zeros with nan
+tf = eVertices == 0;
+eVertices(tf) = nan;
 
 %% Package output
 edgeInfo.Edges = uEdges;
