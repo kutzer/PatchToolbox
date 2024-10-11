@@ -334,14 +334,8 @@ end
 
 %% Find cycles
 G = graph(adjXint);
-idx = 1;
-idxALL = 1:N;
+cycles = findUndirectedGraphCycles(G);
 
-while true
-    cycles = findGraphCycles(G,idx);
-    
-    break
-end
 cycles
 
 %% Package temporary output
