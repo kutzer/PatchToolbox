@@ -316,7 +316,6 @@ end
 %% Populate adjacency
 N = size(Xint,2);
 adjXint = false(N,N);   % NxN adjacency between intersects
-
 for i = 1:N
     for j = (i+1):N
         % Intersections share an edge
@@ -333,7 +332,17 @@ for i = 1:N
     end
 end
 
-adjXint
+%% Find cycles
+G = graph(adjXint);
+idx = 1;
+idxALL = 1:N;
+
+while true
+    cycles = findGraphCycles(G,idx);
+    
+    break
+end
+cycles
 
 %% Package temporary output
 iInfo.Xint = Xint;

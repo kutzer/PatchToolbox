@@ -1,7 +1,7 @@
-function [cycles,subCycles] = findGraphCycles(directedGraph, startNode)
-% FINDGRAPHCYCLES finds closed cycles on a directed graph given a starting
-% node.
-%   cycles = findGraphCycles(directedGraph, startNode)
+function [cycles,subCycles] = findDirectedGraphCycles(directedGraph, startNode)
+% FINDDIRECTEDGRAPHCYCLES finds closed cycles on a directed graph given a 
+% starting node.
+%   cycles = findDirectedGraphCycles(directedGraph, startNode)
 %
 %   Input(s)
 %       directedGraph - directed graph object defining directional
