@@ -1,4 +1,4 @@
-function iInfo = patchPlaneIntersect(ptch,abcd,ZERO)
+function [Xints,iInfo] = patchPlaneIntersect(ptch,abcd,ZERO)
 % PATCHPLANEINTERSECT finds the intersection between a patch and a plane
 %   tbd = patchPlaneIntersect(ptc,abcd)
 %   ___ = patchPlaneIntersect(ptc,abcd,ZERO)
@@ -36,7 +36,8 @@ try
 catch
     error('Patch must be defined with "Vertices" and "Faces".');
 end
-% Patch vertices (3xM array)
+
+%% Patch vertices (3xM array)
 Xv = ptch.Vertices.';
 
 %% Debug plot
@@ -83,7 +84,7 @@ for i = 1:nEdges
             case 1
                 if nnz(tfEndPnt) == 0
                     plt_e(i) = plot3(axs,...
-                        edgePts(1,:),edgePts(2,:),edgePts(3,:),'-g',...
+                        edgePts(1,:),edgePts(2,:),edgePts(3,:),'-c',...
                         'LineWidth',1.5);
                 else
                     plt_e(i) = plot3(axs,...
@@ -336,7 +337,21 @@ end
 G = graph(adjXint);
 cycles = findUndirectedGraphCycles(G);
 
-cycles
+%% Package outputs
+nCycles = numel(cycles);
+for i = 1:nCycles
+    Xints{i} = Xint(:,cycles{i});
+    
+    % TODO - package vertex indices 
+
+    % DEBUG
+    if debug
+        pltInt = plot3(axs,...
+            Xints{i}(1,[1:end,1]),...
+            Xints{i}(2,[1:end,1]),...
+            Xints{i}(3,[1:end,1]),'-g','LineWidth',1.5);
+    end
+end
 
 %% Package temporary output
 iInfo.Xint = Xint;
