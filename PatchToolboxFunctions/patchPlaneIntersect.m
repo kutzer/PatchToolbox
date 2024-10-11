@@ -31,10 +31,13 @@ abcd = reshape(abcd,1,[]);
 
 % Parse inputs
 try
+    % Edge info
     eInfo = patchEdgeInfo(ptch);
 catch
     error('Patch must be defined with "Vertices" and "Faces".');
 end
+% Patch vertices (3xM array)
+Xv = ptch.Vertices.';
 
 %% Debug plot
 if debug
@@ -54,53 +57,94 @@ if debug
 end
 
 %% Find edges that intersect with plane
-iInfo.X = [];
-iInfo.tfFaces = [];
-for i = 1:size(eInfo.Edges,1)
-    edgePts = ptch.Vertices(eInfo.Edges(i,:),:).';
-    pnt = intersectPlaneSegment(abcd,edgePts);
-    tfFaces = any(eInfo.Faces == i,2);
+% Initialize variables
+Xint = [];      % 3xN array of intersection points
+tfFaces = [];   % FxN logical array representing faces adjacent to point
+tfEdges = [];   % ExN logical array representing edges adjacent to point
+adjXint = [];   % NxN logical array defining adjacency between intersects
 
-    if debug
-        plt_e(i) = plot3(axs,edgePts(1,:),edgePts(2,:),edgePts(3,:),'-k');
-    end
+nEdges = size(eInfo.Edges,1);
+nFaces = size(eInfo.Faces,1);
+for i = 1:nEdges
+    % Extract end-points of Edge_i (3x2 array)
+    edgePts = Xv(:,eInfo.Edges(i,:));
+
+    % Define the point(s) of intersection with the slicing plane
+    %   pnt - []  -> No intersect
+    %   pnt - 3x1 -> Segment intersect plane
+    %   pnt - 3x2 -> Segment on plane
+    [pnt,tfEndPnt] = intersectPlaneSegment(abcd,edgePts,ZERO);
     
+    % Process intersection by type
+    % -> Intersection(s) are the edge end-point(s)
+    if any(tfEndPnt)
+
+        % Point(s) of intersection is/are end-points of the edge
+        jj = 0;
+        for j = 1:numel(tfEndPnt)
+
+            % Skip point if it is not on the plane
+            if ~tfEndPnt(j)
+                continue;
+            end
+
+            % Append intersection point
+            jj = jj+1;
+            Xint(:,end+1) = pnt(:,jj);
+            
+            % Define vertex index
+            idxVert = eInfo.Edges(i,j);
+            
+            % Define adjacent edge indices
+            idxEdge = eInfo.Vertices(idxVert,:);
+            % -> Remove NaN values
+            idxEdge = idxEdge(~isnan(idxEdge));
+
+            % Update tfEdges
+            tfEdges(:,end+1) = false(nEdges,1);
+            tfEdges(idxEdge,end) = true;
+
+            % Define adjacent faces
+            tfFaces(:,end+1) = false(nFaces,1);
+            for k = idxEdge
+                tfFaces(:,end) = tfFaces(:,end) | any(eInfo.Faces == k,2);
+            end
+
+        end
+
+        continue
+    end
+
+    % -> Intersection is not the edge end-point
     switch size(pnt,2)
-        case 1
-            if ~isempty(iInfo.tfFaces)
-                if any( any(iInfo.tfFaces,2) & tfFaces )
-                    % Repeat face
-                    % TODO - address this again
-                    %continue
-                end
+        case 0  % pnt - []  -> No intersect
+            % Do nothing
+            continue
+        case 1  % pnt - 3x1 -> Segment intersect plane
+            
+            % Append intersection point
+            Xint(:,end+1);
+
+            % Define edge index
+            idxEdge = i;
+
+            % Update tfEdges
+            tfEdges(:,end+1) = false(nEdges,1);
+            tfEdges(idxEdge,end) = true;
+
+            % Define adjacent faces
+            tfFaces(:,end+1) = false(nFaces,1);
+            for k = idxEdge
+                tfFaces(:,end) = tfFaces(:,end) | any(eInfo.Faces == k,2);
             end
 
-            iInfo.X(:,end+1) = pnt;
-            iInfo.tfFaces(:,end+1) = tfFaces;
-
-            if debug
-                set(plt_e(i),'Color','g');
-                plot3(axs,pnt(1,:),pnt(2,:),pnt(3,:),'*r');
-            end
-
-        case 2
-            if ~isempty(iInfo.tfFaces)
-                if any( any(iInfo.tfFaces,2) & tfFaces )
-                    % Repeat face
-                    % TODO - address this again
-                    %continue
-                end
-            end
-
-            iInfo.X(:,end+1) = pnt(:,1);
-            iInfo.X(:,end+1) = pnt(:,2);
-            iInfo.tfFaces(:,end+1) = tfFaces;
-            iInfo.tfFaces(:,end+1) = tfFaces;
-
-            if debug
-                set(plt_e(i),'Color','m');
-                plot3(axs,pnt(1,:),pnt(2,:),pnt(3,:),'*r');
-            end
+        case 2  % pnt - 3x2 -> Segment on plane
+            % UNEXPECTED CASE!
+            % This should be addressed in:
+            %   "Intersection(s) are the edge end-point(s)"
+            tfEndPnt
+            pnt
+            error('Unexpected case');
     end
 
 end
