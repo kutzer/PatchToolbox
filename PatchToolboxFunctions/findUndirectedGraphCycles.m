@@ -18,7 +18,7 @@ function cycles = findUndirectedGraphCycles(G)
 %% Check input(s)
 narginchk(1,1);
 
-switch lower( class(directedGraph) )
+switch lower( class(G) )
     case 'graph'
         % Good input
     otherwise
