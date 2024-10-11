@@ -9,13 +9,14 @@ function [cycles,subCycles] = findDirectedGraphCycles(directedGraph, startNode)
 %           startNode - scalar integer specifying the starting node for
 %                       finding cycles in the directed graph.
 %
+%   Output(s)
 %          cycles - N-element cell array containing ordered node indices
 %                   defining closed cycles in the directedGraph
 %       subCycles - M-element cell array containing ordered node indices
 %                   defining the shortest subset of cycles that cover all
 %                   nodes
 %
-%   See also digraph
+%   See also digraph findUndirectedGraphCycles
 %
 %   M. Kutzer, 13Sep2024, USNA
 
