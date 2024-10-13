@@ -343,10 +343,31 @@ G = graph(adjXint);
 cycles = findUndirectedGraphCycles(G);
 
 %% Package outputs
+f = ptch.Faces;
+nFaces = size(f,1);
+mFaces = size(f,2);
+f0 = f;
+f0(isnan(f)) = 0;
+f0_srt = sort(f0,2);
+
 nCycles = numel(cycles);
 for i = 1:nCycles
     Xints{i} = Xint(:,cycles{i});
     
+    % Check for special-case
+    % -> Intersection cycle corresponds to a face
+    f_i = cycles{i};
+    if numel(f_i) < mFaces
+        f_i(mFaces) = 0;
+    end
+    f_i = sort(f_i);
+    f_i = repmat(f_i,nFaces,1);
+    
+    tf = all(f0_srt == f_i,2);
+    if nnz(tf) == 1
+        Xints{i} = Xint(:,f(tf,:));
+    end
+
     % TODO - package vertex indices 
 
     % DEBUG
