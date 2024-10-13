@@ -356,16 +356,18 @@ for i = 1:nCycles
     
     % Check for special-case
     % -> Intersection cycle corresponds to a face
-    f_i = cycles{i};
-    if numel(f_i) < mFaces
-        f_i(mFaces) = 0;
-    end
-    f_i = sort(f_i);
-    f_i = repmat(f_i,nFaces,1);
-    
-    tf = all(f0_srt == f_i,2);
-    if nnz(tf) == 1
-        Xints{i} = Xint(:,f(tf,:));
+    if numel(cycles{i}) <= mFaces
+        f_i = reshape(cycles{i},1,:);
+        if numel(f_i) < mFaces
+            f_i(mFaces) = 0;
+        end
+        f_i = sort(f_i);
+        f_i = repmat(f_i,nFaces,1);
+
+        tf = all(f0_srt == f_i,2);
+        if nnz(tf) == 1
+            Xints{i} = Xint(:,f(tf,:));
+        end
     end
 
     % TODO - package vertex indices 
