@@ -1,20 +1,20 @@
-function [n_hat,n] = patchFaceNormal(ptc,idx)
+function [n_hat,n] = patchFaceNormal(ptch,idx)
 % PATCHFACENORMAL calculates the normal to specified faces of a patch
 % object/struct.
-%   n_hat = PATCHFACENORMAL(ptc) returns an Nx3 array containing the unit
+%   n_hat = PATCHFACENORMAL(ptch) returns an Nx3 array containing the unit
 %   normals of each face of the patch object/struct.
 %
-%   n_hat = PATCHFACENORMAL(ptc,idx) allows the user to specify an Mx1
+%   n_hat = PATCHFACENORMAL(ptch,idx) allows the user to specify an Mx1
 %   array of face indices, and the function returns an Mx3 array containing
 %   the unit normals to the specified faces.
 %
 %   [n_hat,n] = PATCHFACENORMAL(___) also returns the normal.
 %
 %   Input(s)
-%       ptc - patch object or structured array with fields 'Vertices' and
+%       ptch - patch object or structured array with fields 'Vertices' and
 %            'Faces'
-%           ptc.Vertices - Nx3 array containing 3D vertex coordinates
-%           ptc.Faces    - Mx3 array containing vertex indices describing
+%           ptch.Vertices - Nx3 array containing 3D vertex coordinates
+%           ptch.Faces    - Mx3 array containing vertex indices describing
 %                          triangular faces
 %       idx - [OPTIONAL] face index or indices for calculating the normal.
 %             If idx is not specified, normals are calculated for all
@@ -44,7 +44,7 @@ catch
 end
 
 if nargin < 2
-    M = size(ptc.Faces,1);
+    M = size(f,1);
     idx = 1:M;
 end
 
@@ -52,10 +52,14 @@ end
 n = nan(numel(idx),3);
 n_hat = n;
 for i = 1:numel(idx)
+    % Define non-nan faces
+    f_i = f(idx(i),:);
+    tf = ~isnan(f_i);
+    f_i = f_i(tf);
     % Get vertices
-    v = ptc.Vertices(ptc.Faces(idx(i),:),:);
+    v_i = v(f_i,:);
     % Calculate normal
-    n(i,:) = cross( (v(3,:) - v(2,:)), (v(1,:) - v(2,:)) );
+    n(i,:) = cross( (v_i(3,:) - v_i(2,:)), (v_i(1,:) - v_i(2,:)) );
     n_hat(i,:) = n(i,:)./norm(n(i,:));
 end
 
