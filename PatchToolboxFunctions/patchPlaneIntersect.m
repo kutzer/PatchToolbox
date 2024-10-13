@@ -357,7 +357,7 @@ for i = 1:nCycles
     % Check for special-case
     % -> Intersection cycle corresponds to a face
     if numel(cycles{i}) <= mFaces
-        f_i = reshape(cycles{i},1,:);
+        f_i = reshape(cycles{i},1,[]);
         if numel(f_i) < mFaces
             f_i(mFaces) = 0;
         end
