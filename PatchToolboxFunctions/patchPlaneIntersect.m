@@ -344,6 +344,8 @@ cycles = findUndirectedGraphCycles(G);
 
 %% Package outputs
 f = ptch.Faces;
+mFaces = size(f,2);
+
 nCycles = numel(cycles);
 for i = 1:nCycles
     Xints{i} = Xint(:,cycles{i});
