@@ -366,7 +366,9 @@ for i = 1:nCycles
 
         tf = all(f0_srt == f_i,2);
         if nnz(tf) == 1
-            Xints{i} = Xint(:,f(tf,:));
+            f_i = f(tf,:);
+            f_i = f_i(f_i > 0);
+            Xints{i} = Xint(:,f_i);
         end
     end
 
