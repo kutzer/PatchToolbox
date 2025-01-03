@@ -11,9 +11,11 @@ function [Xints,iInfo] = patchPlaneIntersect(ptch,abcd,ZERO)
 %              value is 1e-8.
 %
 %   Output(s)
-%       Xints - N-element cell array containing the vertices of the unique 
+%        Xints - N-element cell array containing the vertices of the unique 
 %               paths of intersection
-%       iInfo - structured array containing intersection info
+%       isFace - N-element binary array describing whether the intersection
+%                corresponds to a face of the patch
+%        iInfo - structured array containing intersection info
 %
 %   TODO - finalize slicing of polyshape and differentiate between regions
 %          and holes
@@ -343,7 +345,7 @@ G = graph(adjXint);
 cycles = findUndirectedGraphCycles(G);
 
 if debug
-    assignin('base','G_tmp',G);
+    %assignin('base','G_tmp',G);
     figG = figure('Name','patchPlaneIntersect.m, debug = true');
     axsG = axes('Parent',figG);
     pltG = plot(axsG,G);
@@ -355,16 +357,66 @@ mFaces = size(f,2);
 
 nCycles = numel(cycles);
 for i = 1:nCycles
-    Xints{i} = Xint(:,cycles{i});
-    
     % Check for special-case
+    tfSpecialCase = false;
     % -> Intersection cycle corresponds to a face
     if numel(cycles{i}) <= mFaces
         tf = all( tfFaces(:,cycles{i}.'),2 );
         if nnz(tf) == 1
             f_i = f(tf,:);
             f_i = f_i(~isnan(f_i));
+            isFace(i) = true;
             Xints{i} = Xv(:,f_i);
+            tfSpecialCase = true;
+            
+            % NOTE: For the special case, the projection will be zero
+            % -> For 3D printing, we will use the plane normal for the
+            %   initial layer.
+            vProj{i}{1} = repmat(abcd(1:3).',1,size(Xints{i},2));
+            vProj{i}{2} = vProj{i}{1};
+
+            vProjHat{i}{1} = ...
+                repmat((abcd(1:3)./norm(abcd(1:3)).',1,size(Xints{i},2));
+            vProjHat{i}{2} = vProjHat{i}{1};
+        end
+    end
+
+    % Isolate intersection
+    if ~tfSpecialCase
+        % -> Assume intersection does not correspond to a full face
+        isFace(i) = false;
+        % -> Define points of intersection
+        Xints{i} = Xint(:,cycles{i});
+        % -> Project plane normal to faces containing intersection
+        closedIndex = [1:numel(cycles{i}),1];
+        closedCycle = cycles{i}(closedIndex);
+        %fprintf('%d ',cycles{i});
+        %fprintf('\n');
+        for j = 1:(numel(closedCycle)-1)
+            % Find face associated with cyvle connection
+            tfFace = ...
+                tfFaces(:,closedCycle(j)) & tfFaces(:,closedCycle(j+1));
+            if nnz(tfFace) ~= 1
+                fprintf('Unexpected circumstance!!!\n')
+                fprintf('%d',tfFace);
+                fprintf('\n');
+            end
+            faceIDX = find(tfFace,1,'first');
+            % Define face normal
+            v_f = patchFaceNormal(ptch,faceIDX);
+            % Define plane normal
+            v_n = abcd(1:3);
+            % Define plane normal projection onto plane
+            v_p = v_n - ( dot(v_f,v_n)/dot(v_f,v_f) )*v_f;
+            v_p_hat = v_p./norm(v_p);
+
+            % Package projected vector
+            % -> Projected vector
+            vProj{i}{1}(:,closedIndex(j  )) = v_p.';
+            vProj{i}{2}(:,closedIndex(j+1)) = v_p.';
+            % -> Projected unit vector
+            vProjHat{i}{1}(:,closedIndex(j  )) = v_p_hat.';
+            vProjHat{i}{2}(:,closedIndex(j+1)) = v_p_hat.';
         end
     end
 
@@ -380,6 +432,9 @@ for i = 1:nCycles
 end
 
 %% Package temporary output
-iInfo.Xint = Xint;
-iInfo.tfFaces = tfFaces;
-iInfo.tfEdges = tfEdges;
+iInfo.isFace   = isFace;
+iInfo.vProj    = vProj;
+iInfo.vProjHat = vProjHat;
+iInfo.Xint     = Xint;
+iInfo.tfFaces  = tfFaces;
+iInfo.tfEdges  = tfEdges;
