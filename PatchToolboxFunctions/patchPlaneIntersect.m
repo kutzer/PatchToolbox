@@ -20,7 +20,7 @@ function [Xints,iInfo] = patchPlaneIntersect(ptch,abcd,ZERO)
 %
 %   M. Kutzer, 10Oct2024, USNA
 
-debug = true;
+debug = false;
 
 %% Check input(s)
 narginchk(2,3);
@@ -343,7 +343,6 @@ G = graph(adjXint);
 cycles = findUndirectedGraphCycles(G);
 
 if debug
-    cycles
     assignin('base','G_tmp',G);
     figG = figure('Name','patchPlaneIntersect.m, debug = true');
     axsG = axes('Parent',figG);
