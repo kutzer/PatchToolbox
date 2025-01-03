@@ -20,7 +20,7 @@ function [Xints,iInfo] = patchPlaneIntersect(ptch,abcd,ZERO)
 %
 %   M. Kutzer, 10Oct2024, USNA
 
-debug = false;
+debug = true;
 
 %% Check input(s)
 narginchk(2,3);
@@ -47,7 +47,7 @@ Xv = ptch.Vertices.';
 
 %% Debug plot
 if debug
-    fig = figure('Name','patchPlaneIntersect.m');
+    fig = figure('Name','patchPlaneIntersect.m, debug = true');
     axs = axes('Parent',fig,'NextPlot','add','DataAspectRatio',[1 1 1]);
     view(axs,3);
 
@@ -341,6 +341,14 @@ end
 %% Find cycles
 G = graph(adjXint);
 cycles = findUndirectedGraphCycles(G);
+
+if debug
+    cycles
+    assignin('base','G_tmp',G);
+    figG = figure('Name','patchPlaneIntersect.m, debug = true');
+    axsG = axes('Parent',figG);
+    pltG = plot(axsG,G);
+end
 
 %% Package outputs
 f = ptch.Faces;
