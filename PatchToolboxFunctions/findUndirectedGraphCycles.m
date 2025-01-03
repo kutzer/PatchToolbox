@@ -15,6 +15,8 @@ function cycles = findUndirectedGraphCycles(G)
 %
 %   M. Kutzer, 13Sep2024, USNA
 
+debug = true;
+
 %% Check input(s)
 narginchk(1,1);
 
@@ -26,12 +28,34 @@ switch lower( class(G) )
 end
 
 %% Find cycles
-N = size(G, 1);
+N = numnodes(G);
 visited = false(1,N);
+
+if debug
+    nStr0 = sprintf('%d',N);
+    nStr0 = numel(nStr0);
+    str0 = repmat('-',1,nStr0);
+    
+    str = sprintf('%d',1:9);
+    str = sprintf('%s ',str);
+    str = repmat(str,1,ceil(N/10));
+    str = str(1:N);
+    fprintf('%s-%s\n',str0,str);
+    
+    fprintf(['%0',num2str(nStr0),'d-'],0);
+    fprintf('%d',visited);
+    fprintf('\n');
+end
 
 cycles = {};
 while ~all(visited,'all')
     s = find(~visited,1,'first');
     cycles{end+1} = dfsearch(G,s);
     visited(cycles{end}) = true;
+
+    if debug
+        fprintf(['%0',num2str(nStr0),'d-'],numel(cycles));
+        fprintf('%d',visited);
+        fprintf('\n');
+    end
 end
