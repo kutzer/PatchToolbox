@@ -376,7 +376,7 @@ for i = 1:nCycles
             vProj{i}{2} = vProj{i}{1};
 
             vProjHat{i}{1} = ...
-                repmat((abcd(1:3)./norm(abcd(1:3)).',1,size(Xints{i},2));
+                repmat((abcd(1:3)./norm(abcd(1:3))).',1,size(Xints{i},2));
             vProjHat{i}{2} = vProjHat{i}{1};
         end
     end
