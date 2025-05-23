@@ -1,4 +1,4 @@
-function installPatchToolbox(replaceExisting)
+function installPatchToolbox(replaceExisting,skipAdmin)
 % INSTALLPATCHTOOLBOX installs Patch Toolbox for MATLAB.
 %   INSTALLPATCHTOOLBOX installs Patch Toolbox into the following 
 %   locations:
