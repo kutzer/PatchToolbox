@@ -15,7 +15,7 @@ function PatchToolboxUpdate
 % TODO - update function for general operation
 
 % Update Plotting Toolbox
-ToolboxUpdate('Plotting');
+ToolboxUpdate('Patch');
 
 end
 
