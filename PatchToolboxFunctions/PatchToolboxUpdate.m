@@ -6,10 +6,6 @@ function PatchToolboxUpdate
 
 % Updates:
 %   07Jan2021 - Updated ToolboxUpdate
-
-% TODO - Find a location for "PatchToolbox Example SCRIPTS"
-% TODO - update function for general operation
-
 %   22May2025 - Updated to enable local install
 
 % TODO - update function for general operation
