@@ -15,8 +15,6 @@ function installPatchToolbox(replaceExisting,skipAdmin)
 
 % Updates
 %   08Jan2021 - Corrected questdlg
-
-% Updates
 %   22May2025 - Enable local user installation
 
 %% Define support toolboxes
@@ -30,6 +28,7 @@ toolboxContent  = 'PatchToolboxFunctions';
 toolboxExamples = 'PatchToolbox Example SCRIPTS';
 toolboxName = 'Patch Toolbox';
 toolboxShort = strrep(toolboxName, ' ', '');
+
 %% Define toolbox directory options
 toolboxPathAdmin = fullfile(matlabroot,'toolbox',dirName);
 toolboxPathLocal = fullfile(prefdir,'toolbox',dirName);
